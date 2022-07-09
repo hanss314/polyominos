@@ -101,6 +101,10 @@ pub fn bytes_required(n: i16) -> i16 {
 }
 
 pub fn decode(encoded: &BitVec<u8>) -> Option<Polyomino> {
+    if encoded.starts_with(bits![0,0,1]) {
+        return Some(vec![(0,0)]);
+    }
+
     let mut poly = Vec::new();
     let mut bfs_queue: VecDeque<(i8, Point)> = VecDeque::new();
 
