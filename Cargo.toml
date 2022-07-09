@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 authors = ["hanss314"]
 description = "polyomino generation and polyomino file format"
+license = "MIT"
+repository = "https://github.com/hanss314/polyominos"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
