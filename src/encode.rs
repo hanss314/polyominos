@@ -1,12 +1,13 @@
 use std::collections::VecDeque;
 use std::vec::Vec;
 use std::collections::HashSet;
-use bitvec::vec::BitVec;
+use bitvec::prelude::*;
 
 use crate::polyomino::*;
 
 const DIRECTIONS: [(i16, i16); 4] = [
     (1,0), (0,1), (-1,0), (0,-1)];
+
 
 fn get_directions(dir: i8, pos: Point) -> Vec<(i8, Point)> {
     let mut dirs = Vec::new();
@@ -27,9 +28,12 @@ fn get_directions(dir: i8, pos: Point) -> Vec<(i8, Point)> {
     dirs
 }
 
-pub fn encode(poly: &Polyomino) -> BitVec {
+pub fn encode(poly: &Polyomino) -> BitVec<u8> {
     if poly.is_empty() {
         return BitVec::new();
+    } 
+    if poly.len() == 1 {
+        return BitVec::from_iter(vec![0b0100 as u8].into_iter());
     }
     
     let mut bfs_seen: HashSet<Point> = HashSet::new();
@@ -56,7 +60,7 @@ pub fn encode(poly: &Polyomino) -> BitVec {
     encoding
 }
 
-fn chunkify(bits: &BitVec) -> Option<Vec<i8>> {
+fn chunkify(bits: &BitVec<u8>) -> Option<Vec<i8>> {
     let mut ret = Vec::new();
     if bits.is_empty() {
         return Some(ret);
@@ -85,13 +89,28 @@ fn chunkify(bits: &BitVec) -> Option<Vec<i8>> {
     }
 }
 
-pub fn decode(encoded: &BitVec) -> Option<Polyomino> {
+pub fn bytes_required(n: i16) -> i16 {
+    if n <= 0 {
+        1
+    } else if n == 1 {
+        1
+    } else {
+        let x = 3*n-4;
+        (x+7)/8
+    }
+}
+
+pub fn decode(encoded: &BitVec<u8>) -> Option<Polyomino> {
     let mut poly = Vec::new();
     let mut bfs_queue: VecDeque<(i8, Point)> = VecDeque::new();
 
     bfs_queue.push_back((-1, (0,0)));
 
     for bfs_to in chunkify(encoded)? {
+        if bfs_queue.is_empty() && bfs_to == 0 {
+            break;
+        }
+
         let (from, pos) = bfs_queue.pop_front()?;
         for (i, next) in get_directions(from, pos).into_iter().enumerate() {
             if bfs_to & (1 << i) != 0 {

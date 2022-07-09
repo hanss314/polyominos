@@ -2,17 +2,16 @@
 name = "polyominos"
 version = "0.1.0"
 edition = "2021"
+authors = ["hanss314"]
+description = "polyomino generation and polyomino file format"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 bitvec = ">=1.0.0"
-rand = ">=0.8.5"
+serde = { version = "1.0", features = ["derive"] }
+wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+js-sys = "0.3"
 
-[[bin]]
-name = "poly-gen"
-path = "src/gen-main.rs"
-
-[[bin]]
-name = "poly-read"
-path = "src/read-main.rs"
+[lib]
+crate-type = ["cdylib", "rlib"]
